@@ -13,7 +13,7 @@ const PASSWORD = process.env.DBPASS || '!!!!!';
 // const DATABASE = process.env.DBDATABASE || 'tpchtest';
 const DATABASE = process.env.DBDATABASE || 'shopify32';
 const BATCHSIZE = process.env.BATCHSIZE || 100;
-const SENDSIZE = process.env.SENDSIZE || 1;D
+const SENDSIZE = process.env.SENDSIZE || 1;
 const THREADS = process.env.THREADS || 8;
 
 // Hidden parameters for now...
