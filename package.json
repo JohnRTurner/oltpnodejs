@@ -1,0 +1,11 @@
+{
+  "name": "oltpnodejs",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "casual": "^1.6.2",
+    "mysql2": "^2.3.3"
+  }
+}
