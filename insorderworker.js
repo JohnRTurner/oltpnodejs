@@ -6,7 +6,7 @@ import casual from "casual";
 
 let con;
 try {
-    console.log(`thread ${wt.workerData.thread} created.`);
+    // console.log(`thread ${wt.workerData.thread} created.`);
     con = await mysql.createConnection({
         host:       wt.workerData.host,
         user:       wt.workerData.user,

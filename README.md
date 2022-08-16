@@ -23,17 +23,17 @@ This project was generated with NodeJS version 16.13.2.  The result is a Docker 
 1. Relogin for the user to gain access to Docker.
 1. Make a local copy of the application code found on [github][github] by `git clone https://github.com/JohnRTurner/oltpnodejs.git`
 1. Build the Docker image `docker build oltpnodejs -t oltpnodejs`
-1. Run the Image `docker run -d --name oltpnode -e THREADS=8 jrt13a/jrt13a_priv:oltpnode`
+1. Run the Image `docker run -d --name oltpnodejs -e DBPASS=XXXXXXXX -t oltpnodejs`
    1. Note: Add option[s] from below chart with -e
 1. View the logs `docker logs -f oltpnode`
    
 
 | Option     | Description                          | Default                                                                         |
 |------------|--------------------------------------|---------------------------------------------------------------------------------|
-| HOST       | Cluster Server                       | svc-3f97fbaa-99ad-4b51-bdab-b44e14848132-dml.aws-virginia-2.svc.singlestore.com |
-| USER       | Cluster Username                     | admin                                                                           |
-| PASSWORD   | Cluster Password                     |                                                                                 |
-| DATABASE   | Database Name                        | tpchtest                                                                        | 
+| DBHOST     | Cluster Server                       | svc-3f97fbaa-99ad-4b51-bdab-b44e14848132-dml.aws-virginia-2.svc.singlestore.com |
+| DBUSER     | Cluster Username                     | admin                                                                           |
+| DBPASS     | Cluster Password                     |                                                                                 |
+| DBDATABASE | Database Name                        | tpchtest                                                                        | 
 | THREADS    | Number of Threads or Batches to Run  | 8                                                                               |
 | BATCHSIZE  | Rows to Process per Thread           | 100000                                                                          |
 | SENDSIZE   | Rows to Commit per Transaction       | 10000                                                                           |         

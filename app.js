@@ -9,11 +9,11 @@ import {orderbatchtest} from "./orderbatchtest.js";
 // const HOST = process.env.DBHOST || 'svc-3f97fbaa-99ad-4b51-bdab-b44e14848132-dml.aws-virginia-2.svc.singlestore.com';
 const HOST = process.env.DBHOST || 'svc-9739659c-fe84-4249-ae51-694c8d07805b-dml.aws-virginia-4.svc.singlestore.com';
 const USER = process.env.DBUSER || 'admin';
-const PASSWORD = process.env.DBPASS || '!';
+const PASSWORD = process.env.DBPASS || '!!!!!';
 // const DATABASE = process.env.DBDATABASE || 'tpchtest';
 const DATABASE = process.env.DBDATABASE || 'shopify32';
 const BATCHSIZE = process.env.BATCHSIZE || 100;
-const SENDSIZE = process.env.SENDSIZE || 1;
+const SENDSIZE = process.env.SENDSIZE || 1;D
 const THREADS = process.env.THREADS || 8;
 
 // Hidden parameters for now...
@@ -28,9 +28,9 @@ const BATCHTEST = process.env.MAXPRICE || 0;
 
 const JSONTEST = process.env.JSON || 0;
 
-const ORDERV3TEST = process.env.ORDERV3TEST || 1;
+const ORDERTEST = process.env.ORDERTEST || 1;
 
-const ORDERV6TEST = process.env.ORDERV6TEST || 0;
+const TNAME = process.env.TNAME || 'order_v3';
 
 if(OLTPTEST && JSONTEST){
     await lineitemjsonoltptest(HOST, USER, PASSWORD, DATABASE);
@@ -50,16 +50,9 @@ if(BATCHTEST && (!JSONTEST)) {
         MAXLINES, MAXPARTKEY, MAXSUPPKEY, MINPRICE, MAXPRICE);
 }
 
-if(ORDERV3TEST) {
+if(ORDERTEST) {
     console.log("Starting Orderv3 test");
-    await orderbatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS,
-        "order_v3");
-}
-
-if(ORDERV6TEST) {
-    console.log("Starting Orderv6 test");
-    await orderbatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS,
-        "order_v6");
+    await orderbatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS, TNAME);
 }
 
 
