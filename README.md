@@ -18,11 +18,11 @@ This project was generated with NodeJS version 16.13.2.  The result is a Docker 
 
 ### Run the Docker Image
 1. Obtain Server - can use AWS
-1. Install Docker - `sudo apt install docker.io`
+1. Install Docker - `sudo apt install docker.io nmon -y`
 1. Add Docker Group to User `sudo usermod -a -G docker ubuntu`
 1. Relogin for the user to gain access to Docker.
-1. Make a local copy of the application code found on [github][github]
-1. Build the Docker image `docker build -t jrt13a/jrt13a_priv:oltpnode .`
+1. Make a local copy of the application code found on [github][github] by `git clone https://github.com/JohnRTurner/oltpnodejs.git`
+1. Build the Docker image `docker build oltpnodejs -t oltpnodejs`
 1. Run the Image `docker run -d --name oltpnode -e THREADS=8 jrt13a/jrt13a_priv:oltpnode`
    1. Note: Add option[s] from below chart with -e
 1. View the logs `docker logs -f oltpnode`
@@ -56,4 +56,4 @@ Can view the code on [github][github]
 
 [try-free]: https://www.singlestore.com/try-free/
 [portal]: https://portal.singlestore.com/
-[github]: https://johnrturner.github.io
+[github]: https://github.com/JohnRTurner/oltpnodejs
