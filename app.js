@@ -1,60 +1,43 @@
-'use strict'
+import createError from "http-errors";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+import api1 from "./routes/api.js";
+import idx from "./routes/index.js";
 
-import {lineitemjsonoltptest} from "./lineitemjsonoltptest.js";
-import {lineitemjsonbatchtest} from "./lineitemjsonbatchtest.js";
-import {lineitemoltptest} from "./lineitemoltptest.js";
-import {lineitembatchtest} from "./lineitembatchtest.js";
-import {orderbatchtest} from "./orderbatchtest.js";
+const app = express();
 
-// const HOST = process.env.DBHOST || 'svc-3f97fbaa-99ad-4b51-bdab-b44e14848132-dml.aws-virginia-2.svc.singlestore.com';
-const HOST = process.env.DBHOST || 'svc-9739659c-fe84-4249-ae51-694c8d07805b-dml.aws-virginia-4.svc.singlestore.com';
-const USER = process.env.DBUSER || 'admin';
-const PASSWORD = process.env.DBPASS || '!!!!!';
-// const DATABASE = process.env.DBDATABASE || 'tpchtest';
-const DATABASE = process.env.DBDATABASE || 'shopify32';
-const BATCHSIZE = process.env.BATCHSIZE || 100;
-const SENDSIZE = process.env.SENDSIZE || 1;
-const THREADS = process.env.THREADS || 8;
+// view engine setup
+app.set('views', 'views');
+app.set('view engine', 'pug');
 
-// Hidden parameters for now...
-const MAXLINES = process.env.MAXLINES || 10;
-const MAXPARTKEY = process.env.MAXPARTKEY || 20000000;
-const MAXSUPPKEY = process.env.MAXSUPPKEY || 1000000;
-const MINPRICE = process.env.MINPRICE || 900.00;
-const MAXPRICE = process.env.MAXPRICE || 104947.00;
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static('public'));
+app.use(cors());
+app.options('*', cors())
 
-const OLTPTEST = process.env.MAXPRICE || 0;
-const BATCHTEST = process.env.MAXPRICE || 0;
+app.use('/api/v1', api1);
+app.use('/', idx);
 
-const JSONTEST = process.env.JSON || 0;
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    next(createError(404));
+});
 
-const ORDERTEST = process.env.ORDERTEST || 1;
+// error handler
+app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-const TNAME = process.env.TNAME || 'order_v3';
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+});
 
-if(OLTPTEST && JSONTEST){
-    await lineitemjsonoltptest(HOST, USER, PASSWORD, DATABASE);
-}
-
-if(BATCHTEST && JSONTEST) {
-    await lineitemjsonbatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS,
-        MAXLINES, MAXPARTKEY, MAXSUPPKEY, MINPRICE, MAXPRICE);
-}
-
-if(OLTPTEST && (!JSONTEST)){
-    await lineitemoltptest(HOST, USER, PASSWORD, DATABASE);
-}
-
-if(BATCHTEST && (!JSONTEST)) {
-    await lineitembatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS,
-        MAXLINES, MAXPARTKEY, MAXSUPPKEY, MINPRICE, MAXPRICE);
-}
-
-if(ORDERTEST) {
-    console.log("Starting Orderv3 test");
-    await orderbatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS, TNAME);
-}
-
-
-console.log("Exiting");
-process.exit(0);
+// module.exports = app;
+export default app;

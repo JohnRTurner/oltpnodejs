@@ -1,11 +1,24 @@
 {
   "name": "oltpnodejs",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "NodeJS test of Batch and OLTP with SingleStore",
+  "keywords": ["SingleStore","Batch"],
+  "author": ["John R. Turner"],
+  "license": "Apache-2.0",
   "type": "module",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "start": "node bin/run"
+  },
   "dependencies": {
     "casual": "^1.6.2",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "pug": "2.0.0-beta11"
   }
 }

@@ -1,4 +1,3 @@
-import lineitemjson from "./lineitemjson.js";
 import mysql from "mysql2/promise";
 import Worker from "worker_threads";
 
@@ -6,10 +5,7 @@ function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 
-
-export async function lineitemjsonbatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS,
-                                            MAXLINES, MAXPARTKEY, MAXSUPPKEY, MINPRICE, MAXPRICE) {
-    await lineitemjson.precheck(HOST, USER, PASSWORD, DATABASE);
+export async function orderbatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS, TNAME) {
     const con = await mysql.createPool({
         host: HOST,
         user: USER,
@@ -21,18 +17,20 @@ export async function lineitemjsonbatchtest(HOST, USER, PASSWORD, DATABASE, BATC
         console.error("No Pool Found!")
         process.exit(1);
     }
-    let STARTVAL = (await lineitemjson.getnextorder(con))[0].nextorder;
+    /*
+    let STARTVAL = (await lineitem.getnextorder(con))[0].nextorder;
     if (!STARTVAL) {
-        console.error("No order found from lineitemjson!")
+        console.error("No order found from lineitem!")
         process.exit(1);
     }
+    */
 
     let threads = [];
     const totstart = Date.now();
     for (let i = 1; i <= THREADS; i++) {
         threads[i] = new Promise((resolve, reject) => {
             const start = Date.now();
-            new Worker.Worker('./inslineitemjsonworker.js', {
+            new Worker.Worker('./order_3fish/insorderworker.js', {
                 workerData: {
                     host: HOST,
                     user: USER,
@@ -40,12 +38,7 @@ export async function lineitemjsonbatchtest(HOST, USER, PASSWORD, DATABASE, BATC
                     database: DATABASE,
                     batchsize: BATCHSIZE,
                     sendsize: SENDSIZE,
-                    maxlines: MAXLINES,
-                    startval: STARTVAL + ((i - 1) * BATCHSIZE),
-                    minprice: MINPRICE,
-                    maxprice: MAXPRICE,
-                    maxpartkey: MAXPARTKEY,
-                    maxsupkey: MAXSUPPKEY,
+                    table: TNAME,
                     thread: i
                 }
             }).on('message', (msg) => {

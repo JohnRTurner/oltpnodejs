@@ -1,9 +1,11 @@
 // main is run at the end
-import lineitem from "./lineitem.js";
+import lineitem1 from "./lineitemjson.js";
+import lineitem2 from "./lineitem.js";
 import mysql from "mysql2/promise";
 import casual from "casual";
 
-export async function lineitemoltptest(HOST, USER, PASSWORD, DATABASE) {
+export async function lineitemoltptest(HOST, USER, PASSWORD, DATABASE, JSONTEST) {
+    let lineitem = (JSONTEST)?lineitem1:lineitem2;
     await lineitem.precheck(HOST, USER, PASSWORD, DATABASE);
     const con = await mysql.createPool({
         host: HOST,
@@ -44,7 +46,6 @@ export async function lineitemoltptest(HOST, USER, PASSWORD, DATABASE) {
 
 
         try {
-            console.log("got here.");
             let rows = await lineitem.insert(detail, con);
             console.log(`Inserted rows: ${rows}`);
         } catch (err) {

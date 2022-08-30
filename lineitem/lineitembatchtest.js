@@ -1,20 +1,26 @@
-import lineitem from "./lineitem.js";
+import lineitem1 from "./lineitemjson.js";
+import lineitem2 from "./lineitem.js";
+import status from "../data/status.js";
+
 import mysql from "mysql2/promise";
 import Worker from "worker_threads";
 
-function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-}
-
 export async function lineitembatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZE, SENDSIZE, THREADS,
-                                            MAXLINES, MAXPARTKEY, MAXSUPPKEY, MINPRICE, MAXPRICE) {
+                                            MAXLINES, MAXPARTKEY, MAXSUPPKEY, MINPRICE, MAXPRICE, JSONTEST) {
+    if(status.getStatus() !== "Idle"){
+        console.log(`Will not start as server status is not Idle, but is ${status.getStatus()} !`)
+        return false;
+    }
+    status.updateStatus("Starting");
+
+    let lineitem = (JSONTEST)?lineitem1: lineitem2;
     await lineitem.precheck(HOST, USER, PASSWORD, DATABASE);
     const con = await mysql.createPool({
         host: HOST,
         user: USER,
         password: PASSWORD,
         database: DATABASE,
-        connectionLimit: 100
+        connectionLimit: 1
     })
     if (!con) {
         console.error("No Pool Found!")
@@ -31,7 +37,7 @@ export async function lineitembatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZ
     for (let i = 1; i <= THREADS; i++) {
         threads[i] = new Promise((resolve, reject) => {
             const start = Date.now();
-            new Worker.Worker('./inslineitemworker.js', {
+            new Worker.Worker( './lineitem/inslineitemworker.js', {
                 workerData: {
                     host: HOST,
                     user: USER,
@@ -45,36 +51,29 @@ export async function lineitembatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZ
                     maxprice: MAXPRICE,
                     maxpartkey: MAXPARTKEY,
                     maxsupkey: MAXSUPPKEY,
-                    thread: i
+                    thread: i,
+                    jsontest: JSONTEST
                 }
             }).on('message', (msg) => {
-                //console.log(`Thread ${i} has a message`);
-                //console.log(msg.thread);
-                console.log(`Thread ${msg.thread} has received message in ${(Date.now() - start) / 1000.0} seconds.`)
-                console.log(msg);
-                resolve();
+                status.pushUpdate({'Thread': msg.thread, 'Time': (Date.now() - start) / 1000.0, 'Msg': msg.msg })
             }).on('error', (err) => {
-                console.error(err)
+                status.pushUpdate({'Thread': i, 'Time': (Date.now() - start) / 1000.0, 'Msg': `Error: ${err}` })
                 reject();
             }).on('exit', (code) => {
                 if (code !== 0) {
-                    console.log(`Thread ${i} has completed with code: ${code} in ${(Date.now() - start) / 1000.0} seconds.`)
+                    // console.log(`Thread ${i} has completed with code: ${code} in ${(Date.now() - start) / 1000.0} seconds.`)
+                    status.pushUpdate({'Thread': i, 'Time': (Date.now() - start) / 1000.0, 'Msg': `Exit Code: ${code}` })
                 }
                 resolve();
             })
         });
-        await delay(20); //Avoid spiking connection creation
+        await status.delay(20); //Avoid spiking connection creation
     }
+    status.updateStatus("Processing");
     await Promise.allSettled(threads).then(() => {
         const tm = (Date.now() - totstart) / 1000.0;
-        console.log(`Completed ${THREADS} Threads in ${tm} Seconds.`);
-        console.log(`Insert Rows: ${THREADS * BATCHSIZE}`);
-        console.log(`Rows/Second: ${(THREADS * BATCHSIZE) / tm}`);
-        console.log(`Milliseconds per Row: ${(tm * 1000) / (THREADS * BATCHSIZE)}`);
-
+        status.pushUpdate( { 'Threads': THREADS, 'Time': tm, 'Msg': `'InsertRows': ${THREADS * BATCHSIZE}, 'RowsPerSecond': ${(THREADS * BATCHSIZE) / tm},   'MillisecondsPerRow': ${(tm * 1000) / (THREADS * BATCHSIZE)} `});
     });
+    status.updateStatus("Idle");
+    return true;
 }
-
-
-//docker run -d --name oltpnode -e THREADS=64 -eBATCHSIZE=50000 -eSENDSIZE=1000  -eJSONTEST=0 jrt13a/jrt13a_priv:oltpnode  73-76k
-//docker run -d --name oltpnode -e THREADS=64 -eBATCHSIZE=50000 -eSENDSIZE=4000  -eJSONTEST=0 jrt13a/jrt13a_priv:oltpnode 80k - 83k
