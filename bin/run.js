@@ -18,7 +18,7 @@ const USER = process.env.DBUSER || 'admin';
 const PASSWORD = process.env.DBPASS || '!!!!!';
 const DATABASE = process.env.DBDATABASE || 'tpchtest';
 //const DATABASE = process.env.DBDATABASE || 'shopify';
-const TOTALSIZE = process.env.BATCHSIZE || 80000;
+const TOTALSIZE = process.env.TOTALSIZE || 80000;
 const SENDSIZE = process.env.SENDSIZE || 1000;
 const THREADS = process.env.THREADS || 8;
 

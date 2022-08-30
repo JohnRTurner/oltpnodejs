@@ -28,8 +28,8 @@ export async function lineitembatchtest(HOST, USER, PASSWORD, DATABASE, BATCHSIZ
     }
     let STARTVAL = (await lineitem.getnextorder(con))[0].nextorder;
     if (!STARTVAL) {
-        console.error("No order found from lineitem using 1!")
-        #process.exit(1);
+        console.error("No order found from lineitem using 1" )
+        //process.exit(1);
         STARTVAL = 1
     }
 
