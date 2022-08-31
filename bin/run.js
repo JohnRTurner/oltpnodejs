@@ -25,7 +25,7 @@ const THREADS = process.env.THREADS || 8;
 // Hidden parameters for now...
 const MAXLINES = process.env.MAXLINES || 10;
 const MAXPARTKEY = process.env.MAXPARTKEY || 20000000;
-const MAXSUPPKEY = process.env.MAXSUPPKEY || 1000000;
+const MAXSUPPKEY = process.env.MAXSUPPKEY || 999999;
 const MINPRICE = process.env.MINPRICE || 900.00;
 const MAXPRICE = process.env.MAXPRICE || 104947.00;
 
